@@ -255,6 +255,11 @@ p {
   font-weight: 500;
   text-align: left;
 }
+/* A hairline of chrome between rows, so two lit rows (hover next to the
+   current one) read as two, not one merged block. */
+.nav-item + .nav-item {
+  margin-top: 2px;
+}
 .nav-item .i {
   color: var(--muted);
 }
