@@ -3,47 +3,39 @@
  * (sidebar) is near-black, and the content sits in a slightly lighter
  * container with rounded corners, inset from the edges. Depth comes from
  * small lightness steps, never heavy shadows. Icons and text are neutral
- * grey; colour appears only where it means something: a site's colour,
- * a transfer's state, the one primary action. Everything sits on a 4px grid.
+ * grey; colour appears only where it means something, and there is one
+ * colour: teal, for the main action on a screen, progress, and connected
+ * or done. Failure is a muted red. Site and file icons are grey. Everything sits on a 4px grid.
  */
 
 :root {
   color-scheme: dark;
 
-  --chrome: #0b0b0c;
-  --panel: #111113;
-  --raised: #161618;
-  --hover: #1a1a1d;
+  --chrome: #0a0a0b;
+  --panel: #101012;
+  --raised: #151517;
+  --hover: #19191c;
   --active: #1f1f23;
-  --selected: #1d1e25;
-  --input: #0e0e10;
+  --selected: #1c1c20;
+  --input: #0d0d0f;
 
-  --line: #1e1e21;
-  --line-strong: #2a2a2e;
+  --line: #1d1d20;
+  --line-strong: #27272b;
 
-  --text: #e8e8ec;
-  --secondary: #b4b4bb;
-  --muted: #8a8a92;
+  --text: #ececef;
+  --secondary: #a9a9b0;
+  --muted: #7e7e86;
   --faint: #5f5f66;
 
-  --accent: #5e6ad2;
-  --accent-hover: #6c78e0;
+  /* The one colour. Bright, so filled controls take near-black text. */
+  --accent: #2dd4bf;
+  --accent-hover: #5eead4;
+  --accent-ink: #04221d;
   --accent-soft: color-mix(in srgb, var(--accent) 18%, transparent);
-  --ok: #4cb782;
-  --warn: #f2c94c;
-  --bad: #eb5757;
-  --info: #4ea7fc;
+  /* Connected and done share the accent: one colour for "good". */
+  --ok: var(--accent);
+  --bad: #e5736a;
 
-  /* Site colours. */
-  --c-indigo: #7c84f0;
-  --c-blue: #4ea7fc;
-  --c-teal: #26b5ce;
-  --c-green: #4cb782;
-  --c-yellow: #f2c94c;
-  --c-orange: #f2994a;
-  --c-red: #eb5757;
-  --c-pink: #e568b4;
-  --c-gray: #95959d;
 
   --radius: 6px;
   --row: 32px;
@@ -304,11 +296,9 @@ p {
   height: 6px;
   border-radius: 50%;
   background: var(--ok);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 18%, transparent);
 }
 .nav-item .status-dot.busy {
-  background: var(--warn);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--warn) 18%, transparent);
+  background: var(--muted);
   animation: pulse 1.2s ease-in-out infinite;
 }
 .nav-item .item-more {
@@ -482,7 +472,7 @@ p {
   color: var(--text);
 }
 .icon-btn.starred {
-  color: var(--warn);
+  color: var(--text);
 }
 
 .divider {
@@ -518,12 +508,19 @@ p {
 }
 .btn.primary {
   background: var(--accent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, white 12%, transparent);
-  color: white;
+  box-shadow: none;
+  color: var(--accent-ink);
+  font-weight: 600;
 }
 .btn.primary:hover:not(:disabled) {
   background: var(--accent-hover);
-  color: white;
+  color: var(--accent-ink);
+}
+/* A disabled main button is grey, not a dim accent. */
+.btn.primary:disabled {
+  opacity: 1;
+  background: var(--hover);
+  color: var(--faint);
 }
 .btn.danger {
   background: color-mix(in srgb, var(--bad) 85%, black);
@@ -705,26 +702,18 @@ p {
   user-select: text;
 }
 
-/* File kinds: neutral, with one quiet tint each. */
+/* File kinds: grey. Folders a step lighter so they stand out by shape and tone. */
 .k-folder {
-  color: #8f98f5;
-}
-.k-code {
   color: #8a8a92;
 }
-.k-image {
-  color: #3fb6c8;
-}
-.k-archive {
-  color: #d9965a;
-}
+.k-code,
+.k-image,
+.k-archive,
 .k-text,
 .k-doc,
-.k-file {
-  color: #7d7d85;
-}
+.k-file,
 .k-media {
-  color: #c27ad8;
+  color: #66666d;
 }
 
 .statusbar {
@@ -1016,9 +1005,13 @@ kbd {
   font-weight: 500;
 }
 .btn.primary kbd {
-  background: color-mix(in srgb, white 16%, transparent);
+  background: color-mix(in srgb, var(--accent-ink) 14%, transparent);
   box-shadow: none;
-  color: white;
+  color: var(--accent-ink);
+}
+.btn.primary:disabled kbd {
+  background: var(--active);
+  color: var(--faint);
 }
 
 /* ───────────────────────── Menus ───────────────────────── */
@@ -1326,23 +1319,6 @@ kbd {
   color: var(--text);
 }
 
-.swatches {
-  display: flex;
-  gap: 6px;
-  height: 32px;
-  align-items: center;
-}
-.swatch {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-}
-.swatch.on {
-  box-shadow:
-    0 0 0 2px #151517,
-    0 0 0 3.5px currentColor;
-}
 
 .test-result {
   display: flex;
@@ -1393,6 +1369,7 @@ kbd {
 .check.on {
   background: var(--accent);
   box-shadow: none;
+  color: var(--accent-ink);
 }
 .check .i {
   width: 12px;
@@ -1529,12 +1506,7 @@ kbd {
   width: 14px;
   height: 14px;
 }
-.transfer .t-icon.up {
-  color: var(--c-indigo);
-}
-.transfer .t-icon.down {
-  color: var(--c-teal);
-}
+
 .transfer .t-title {
   display: flex;
   align-items: center;
@@ -1593,30 +1565,21 @@ kbd {
 .state-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   height: 22px;
-  padding: 0 8px;
-  border-radius: 11px;
-  box-shadow: inset 0 0 0 1px var(--line-strong);
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
 }
 .state-pill .i {
   width: 12px;
   height: 12px;
 }
-.state-pill.done {
+.state-pill.done .i {
   color: var(--ok);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ok) 35%, transparent);
 }
 .state-pill.failed {
   color: var(--bad);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bad) 35%, transparent);
-}
-.state-pill.running {
-  color: var(--warn);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warn) 35%, transparent);
 }
 
 /* The progress ring in the sidebar's Transfers row. */
@@ -1687,7 +1650,7 @@ kbd {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--warn);
+  background: var(--secondary);
 }
 
 /* ───────────────────────── Welcome ───────────────────────── */

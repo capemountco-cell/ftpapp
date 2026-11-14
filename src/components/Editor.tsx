@@ -86,7 +86,7 @@ export function Editor({ site, entry, onClose, onSaved }: { site: Site; entry: E
       <header className="header">
         <nav className="crumbs">
           <span className="crumb root">
-            <SiteGlyph color={site.color} />
+            <SiteGlyph />
             {site.name}
           </span>
           <ChevronRight className="i crumb-sep" />

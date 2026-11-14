@@ -32,7 +32,7 @@ export function Welcome({ sites, onQuickConnect, onOpen, onNewSite }: { sites: S
           <h3>Recent</h3>
           {recent.map((s) => (
             <button key={s.id} className="recent-item" onClick={() => onOpen(s)}>
-              <SiteGlyph color={s.color} />
+              <SiteGlyph />
               <span>{s.name}</span>
               <span className="sub">
                 {protocolLabel(s.protocol)} · {serverLabel(s)}

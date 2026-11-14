@@ -52,7 +52,7 @@ export function TrustDialog({ error, onTrust, onClose }: { error: NativeError; o
       >
         <div className="dialog-body">
           <h2>
-            <Shield className="i" style={{ color: "var(--c-indigo)" }} /> Trust {error.host}?
+            <Shield className="i" style={{ color: "var(--muted)" }} /> Trust {error.host}?
           </h2>
           {tls ? (
             <p>The server's certificate isn't trusted by this Mac because {error.reason}. That's common on shared hosting. If you trust this server, Captain will remember this exact certificate.</p>

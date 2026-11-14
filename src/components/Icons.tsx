@@ -278,7 +278,8 @@ export function Wordmark({ height = 22, className = "wordmark" }: { height?: num
   );
 }
 
-/** A site's glyph: the server icon in its colour. */
-export function SiteGlyph({ color, className }: { color: string; className?: string }) {
-  return <Server className={className ?? "i"} style={{ color: `var(--c-${color}, var(--c-indigo))` }} />;
+/** A site's glyph: the server icon, grey like every other icon. A site is
+ *  told apart by its name, not a colour. */
+export function SiteGlyph({ className }: { className?: string }) {
+  return <Server className={className ?? "i"} />;
 }

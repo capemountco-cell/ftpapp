@@ -130,7 +130,7 @@ export function Sidebar(props: {
                     }}
                     title={site.host}
                   >
-                    <SiteGlyph color={site.color} />
+                    <SiteGlyph />
                     <span className="label">{site.name}</span>
                     <span
                       className="item-more"
