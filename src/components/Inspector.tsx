@@ -212,7 +212,7 @@ function SiteProps({ site, compact }: { site: Site; compact?: boolean }) {
     <>
       {!compact && (
         <div className="inspector-title">
-          <SiteGlyph color={site.color} />
+          <SiteGlyph />
           <h2>{site.name}</h2>
         </div>
       )}

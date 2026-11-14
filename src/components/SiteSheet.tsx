@@ -135,24 +135,9 @@ export function SiteSheet({
       >
         <div className="composer-top">
           <span className="pill">
-            <SiteGlyph color={site.color} />
+            <SiteGlyph />
             {editing ? initial.name : "New site"}
           </span>
-          <span className="spacer" />
-          <div className="swatches" role="radiogroup" aria-label="Colour">
-            {COLORS.map((c) => (
-              <button
-                type="button"
-                key={c}
-                role="radio"
-                aria-checked={site.color === c}
-                aria-label={c}
-                className={`swatch${site.color === c ? " on" : ""}`}
-                style={{ background: `var(--c-${c})`, color: `var(--c-${c})` }}
-                onClick={() => set({ color: c })}
-              />
-            ))}
-          </div>
         </div>
 
         <input

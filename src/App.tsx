@@ -321,7 +321,7 @@ export function App() {
   const commands: PaletteCommand[] = useMemo(() => {
     const list: PaletteCommand[] = [];
     for (const s of sites)
-      list.push({ id: `site-${s.id}`, group: "Sites", label: s.name, sub: serverLabel(s), icon: <SiteGlyph color={s.color} />, run: () => goSite(s.id) });
+      list.push({ id: `site-${s.id}`, group: "Sites", label: s.name, sub: serverLabel(s), icon: <SiteGlyph />, run: () => goSite(s.id) });
     for (const s of sites)
       for (const b of s.bookmarks)
         list.push({ id: `bm-${s.id}-${b.path}`, group: "Bookmarks", label: b.name, sub: `${s.name} · ${b.path}`, icon: <Star />, run: () => goSite(s.id, b.path) });
@@ -378,7 +378,7 @@ export function App() {
     if (p.kind === "home") return { label: "Start", icon: <Home /> };
     if (p.kind === "transfers") return { label: "Transfers", icon: <TransfersIcon /> };
     const s = sites.find((x) => x.id === p.siteId);
-    return { label: `${s?.name ?? "Site"}${p.path ? ` · ${tilde(p.path, tabs[p.siteId]?.home ?? null)}` : ""}`, icon: <SiteGlyph color={s?.color ?? "gray"} /> };
+    return { label: `${s?.name ?? "Site"}${p.path ? ` · ${tilde(p.path, tabs[p.siteId]?.home ?? null)}` : ""}`, icon: <SiteGlyph /> };
   };
 
   let main: React.ReactNode;

@@ -663,7 +663,7 @@ export function Browser({
       <header className="header" data-tauri-drag-region>
         <nav className="crumbs" aria-label="Path">
           <button className="crumb root" data-drop={home ?? "/"} onClick={() => home && navigate(home)} title={`${site.name} — go to login folder`}>
-            <SiteGlyph color={site.color} />
+            <SiteGlyph />
             {site.name}
           </button>
           {segs.slice(1).map((c, i, all) => {
