@@ -158,7 +158,7 @@ export function Inspector({
           ) : null}
           {isText && (
             <button className="ins-action" onClick={() => onOpen(one)}>
-              <Code /> Edit in Teap <Kbd keys={["⌘", "E"]} />
+              <Code /> Edit in Captain <Kbd keys={["⌘", "E"]} />
             </button>
           )}
           {one.kind === "file" && (

@@ -1,4 +1,4 @@
-//! One error type for everything Teap does, shaped for the interface: each
+//! One error type for everything Captain does, shaped for the interface: each
 //! kind is a situation the window handles differently (ask to trust a host,
 //! ask for a password again, show a message), not a library's error code.
 
@@ -80,7 +80,7 @@ impl Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Error::UnknownHost { host, .. } => write!(f, "{host} is a server Teap hasn't seen before"),
+            Error::UnknownHost { host, .. } => write!(f, "{host} is a server Captain hasn't seen before"),
             Error::HostKeyChanged { host, .. } => write!(
                 f,
                 "The identity of {host} has changed. It may have been reinstalled, or someone may be intercepting the connection"

@@ -249,6 +249,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "captain"
+version = "0.1.0"
+dependencies = [
+ "captain-core",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-dialog",
+]
+
+[[package]]
+name = "captain-core"
+version = "0.1.0"
+dependencies = [
+ "ring",
+ "rustls",
+ "rustls-platform-verifier",
+ "security-framework",
+ "serde",
+ "serde_json",
+ "ssh2",
+ "suppaftp",
+]
+
+[[package]]
 name = "cargo-platform"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3732,32 +3758,6 @@ dependencies = [
  "dunce",
  "embed-resource",
  "toml 1.2.1+spec-1.1.0",
-]
-
-[[package]]
-name = "teap"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-dialog",
- "teap-core",
-]
-
-[[package]]
-name = "teap-core"
-version = "0.1.0"
-dependencies = [
- "ring",
- "rustls",
- "rustls-platform-verifier",
- "security-framework",
- "serde",
- "serde_json",
- "ssh2",
- "suppaftp",
 ]
 
 [[package]]

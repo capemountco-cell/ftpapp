@@ -27,7 +27,7 @@ type AuthChoice = "password" | "key" | "agent" | "anonymous";
 
 /**
  * Add or edit a site. `onTrust` is called when testing meets a server
- * Teap hasn't seen, so the same trust dialog as connecting is used.
+ * Captain hasn't seen, so the same trust dialog as connecting is used.
  */
 export function SiteSheet({
   initial,

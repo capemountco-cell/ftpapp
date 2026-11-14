@@ -76,9 +76,9 @@ npm run dmg
 CI builds and verifies a `.dmg` on every push, so a packaging break shows up
 on the pull request that caused it.
 
-## What Teap is
+## What Captain is
 
-Teap is an SFTP, FTP and FTPS client. The product rules that the code
+Captain is an SFTP, FTP and FTPS client. The product rules that the code
 relies on:
 
 - **Never send a credential to an unverified server.** SSH host keys are
@@ -90,7 +90,7 @@ relies on:
   See the comment at the top of `transfer.rs`.
 - **Browsing and transfers use separate connections**, so a long upload
   never blocks the list.
-- New protocol behaviour gets a case in `crates/teap-core/tests/live.rs`.
+- New protocol behaviour gets a case in `crates/captain-core/tests/live.rs`.
 
 The interface follows Linear's dark UI: the near-black sidebar is the
 window chrome, and the content sits in an inset, rounded panel. Colour

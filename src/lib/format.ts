@@ -91,7 +91,7 @@ export function kindLabel(entry: Pick<Entry, "name" | "kind">): string {
   return entry.kind === "dir" || !ext ? label : `${ext.toUpperCase()} ${label.toLowerCase()}`;
 }
 
-/** Files Teap opens in its own editor: text-like and not huge. */
+/** Files Captain opens in its own editor: text-like and not huge. */
 export function editable(entry: Entry): boolean {
   if (entry.kind === "dir" || entry.size > 2_000_000) return false;
   const k = fileKind(entry);

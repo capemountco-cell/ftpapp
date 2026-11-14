@@ -167,7 +167,7 @@ export function Browser({
     (e: Entry) => {
       if (e.kind === "dir") navigate(e.path);
       else if (editable(e)) services.openEditor(site, e, refresh);
-      else services.confirm({ title: `Download “${e.name}”?`, body: `Teap can't show this kind of file. It'll be saved to ${downloadTo.replace(/^\/Users\/[^/]+/, "~")}.`, action: "Download", onConfirm: () => download([e]) });
+      else services.confirm({ title: `Download “${e.name}”?`, body: `Captain can't show this kind of file. It'll be saved to ${downloadTo.replace(/^\/Users\/[^/]+/, "~")}.`, action: "Download", onConfirm: () => download([e]) });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [navigate, services, site, refresh, downloadTo],
@@ -293,7 +293,7 @@ export function Browser({
     const one = items.length === 1;
     return [
       ...(one && e.kind === "dir" ? [{ label: "Open", icon: <Folder />, keys: ["⌘", "↓"], run: () => navigate(e.path) }] : []),
-      ...(one && editable(e) ? [{ label: "Edit in Teap", icon: <Code />, keys: ["⌘", "E"], run: () => services.openEditor(site, e, refresh) }] : []),
+      ...(one && editable(e) ? [{ label: "Edit in Captain", icon: <Code />, keys: ["⌘", "E"], run: () => services.openEditor(site, e, refresh) }] : []),
       ...(one && e.kind === "file" ? [{ label: "Open in Default App", icon: <External />, run: () => void editExternal(e) }] : []),
       { label: one ? "Download" : `Download ${items.length} Items`, icon: <Download />, keys: ["⌘", "D"], run: () => void download(items) },
       { separator: true },

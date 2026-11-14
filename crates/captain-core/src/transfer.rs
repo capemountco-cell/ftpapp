@@ -6,7 +6,7 @@
 //! - Uploads replace files of the same name on the server (what deploying
 //!   a site expects).
 //! - Downloads never replace anything on this Mac: a clash becomes
-//!   "name 2.ext", like Finder. A download is written to a ".teapdownload"
+//!   "name 2.ext", like Finder. A download is written to a ".captaindownload"
 //!   file and renamed only when complete, so a half file never looks whole.
 //! - A dropped connection is retried once with a fresh one.
 
@@ -131,7 +131,7 @@ impl Queue {
         for i in 0..workers.max(1) {
             let shared = shared.clone();
             std::thread::Builder::new()
-                .name(format!("teap-transfer-{i}"))
+                .name(format!("captain-transfer-{i}"))
                 .spawn(move || worker(shared))
                 .expect("spawn transfer worker");
         }
@@ -536,7 +536,7 @@ fn download_file(
 ) -> Result<()> {
     rep.start_file(&path::name(source));
     let partial = target.with_file_name(format!(
-        "{}.teapdownload",
+        "{}.captaindownload",
         target
             .file_name()
             .map(|n| n.to_string_lossy().into_owned())
@@ -646,7 +646,7 @@ mod tests {
         );
         assert!(q.wait_idle(Duration::from_secs(10)));
         assert!(downloads.join("index.html").exists());
-        assert!(!downloads.join("index.html.teapdownload").exists());
+        assert!(!downloads.join("index.html.captaindownload").exists());
         assert!(!seen.lock().unwrap().is_empty());
 
         q.clear_finished();

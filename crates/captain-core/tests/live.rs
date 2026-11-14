@@ -1,24 +1,27 @@
-//! Against real servers. Skipped unless TEAP_LIVE_HOST is set:
+//! Against real servers. Skipped unless CAPTAIN_LIVE_HOST is set:
 //!
-//!   TEAP_LIVE_HOST=127.0.0.1 TEAP_LIVE_USER=me TEAP_LIVE_PASS=secret \
-//!   TEAP_LIVE_SFTP_PORT=22 TEAP_LIVE_FTP_PORT=21 TEAP_LIVE_FTPS_PORT=21 \
-//!   cargo test -p teap-core --test live -- --nocapture
+//!   CAPTAIN_LIVE_HOST=127.0.0.1 CAPTAIN_LIVE_USER=me CAPTAIN_LIVE_PASS=secret \
+//!   CAPTAIN_LIVE_SFTP_PORT=22 CAPTAIN_LIVE_FTP_PORT=21 CAPTAIN_LIVE_FTPS_PORT=21 \
+//!   cargo test -p captain-core --test live -- --nocapture
 //!
 //! Any port left unset skips that protocol. The test works in a fresh folder
 //! in the login folder and removes it afterwards.
 
 use std::time::Duration;
 
-use teap_core::{trust, App, Auth, Direction, Error, Protocol, Request, Site, State};
+use captain_core::{trust, App, Auth, Direction, Error, Protocol, Request, Site, State};
 
 fn env(k: &str) -> Option<String> {
     std::env::var(k).ok().filter(|v| !v.is_empty())
 }
 
 fn exercise(protocol: Protocol, port: u16) {
-    let host = env("TEAP_LIVE_HOST").unwrap();
-    let base =
-        std::env::temp_dir().join(format!("teap-live-{:?}-{}", protocol, std::process::id()));
+    let host = env("CAPTAIN_LIVE_HOST").unwrap();
+    let base = std::env::temp_dir().join(format!(
+        "captain-live-{:?}-{}",
+        protocol,
+        std::process::id()
+    ));
     let _ = std::fs::remove_dir_all(&base);
     std::fs::create_dir_all(base.join("upload/sub")).unwrap();
     std::fs::write(base.join("upload/a.txt"), "hello").unwrap();
@@ -33,7 +36,7 @@ fn exercise(protocol: Protocol, port: u16) {
                 protocol,
                 host: host.clone(),
                 port,
-                user: env("TEAP_LIVE_USER").unwrap(),
+                user: env("CAPTAIN_LIVE_USER").unwrap(),
                 auth: Auth::Password,
                 remote_path: String::new(),
                 local_path: String::new(),
@@ -41,7 +44,7 @@ fn exercise(protocol: Protocol, port: u16) {
                 bookmarks: vec![],
                 last_used: None,
             },
-            env("TEAP_LIVE_PASS"),
+            env("CAPTAIN_LIVE_PASS"),
         )
         .unwrap();
 
@@ -72,7 +75,7 @@ fn exercise(protocol: Protocol, port: u16) {
         .mkdir(
             &site.id,
             &opened.home,
-            &format!("teap live {}", std::process::id()),
+            &format!("captain live {}", std::process::id()),
         )
         .unwrap();
     app.transfer(vec![Request {
@@ -157,14 +160,14 @@ fn wait(app: &App) {
 
 #[test]
 fn live_servers() {
-    if env("TEAP_LIVE_HOST").is_none() {
-        eprintln!("TEAP_LIVE_HOST not set; skipping");
+    if env("CAPTAIN_LIVE_HOST").is_none() {
+        eprintln!("CAPTAIN_LIVE_HOST not set; skipping");
         return;
     }
     for (var, protocol) in [
-        ("TEAP_LIVE_SFTP_PORT", Protocol::Sftp),
-        ("TEAP_LIVE_FTP_PORT", Protocol::Ftp),
-        ("TEAP_LIVE_FTPS_PORT", Protocol::Ftps),
+        ("CAPTAIN_LIVE_SFTP_PORT", Protocol::Sftp),
+        ("CAPTAIN_LIVE_FTP_PORT", Protocol::Ftp),
+        ("CAPTAIN_LIVE_FTPS_PORT", Protocol::Ftps),
     ] {
         if let Some(port) = env(var).and_then(|p| p.parse().ok()) {
             exercise(protocol, port);

@@ -58,7 +58,7 @@ fn map(e: FtpError, p: &str) -> Error {
                 _ => Error::remote(message),
             }
         }
-        FtpError::BadResponse => Error::connection("The server sent a reply Teap couldn't read"),
+        FtpError::BadResponse => Error::connection("The server sent a reply Captain couldn't read"),
         FtpError::InvalidAddress(e) => {
             Error::connection(format!("The server gave a bad address: {e}"))
         }
@@ -222,7 +222,7 @@ impl Ftp {
         }
 
         let (user, pass) = match site.auth {
-            Auth::Anonymous => ("anonymous".to_string(), "teap@".to_string()),
+            Auth::Anonymous => ("anonymous".to_string(), "captain@".to_string()),
             _ => (site.user.clone(), secret.unwrap_or("").to_string()),
         };
         stream

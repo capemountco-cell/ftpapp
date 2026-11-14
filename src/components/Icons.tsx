@@ -1,9 +1,10 @@
 /**
- * Teap's icons: 16px on a 4px grid, 1.5px strokes, inline SVG. No icon font,
+ * Captain's icons: 16px on a 4px grid, 1.5px strokes, inline SVG. No icon font,
  * no dependency.
  */
 
 import type { FileKind } from "../lib/format";
+import { LOGO_ASPECT, LOGO_PATH, LOGO_VIEWBOX } from "./captain-logo";
 
 type P = { className?: string; style?: React.CSSProperties };
 
@@ -268,13 +269,11 @@ export function KindIcon({ kind, className }: { kind: FileKind; className?: stri
   return <Icon className={`i k-${kind}${className ? " " + className : ""}`} />;
 }
 
-/** The app's mark, as on the app icon: "T" and a prompt's cursor. */
-export function Mark({ size = 18 }: { size?: number }) {
+/** The Captain signature, in the current text colour. `height` sets its size. */
+export function Wordmark({ height = 22, className = "wordmark" }: { height?: number; className?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 18 18" aria-hidden className="mark">
-      <rect width="18" height="18" rx="5" fill="currentColor" />
-      <path d="M4.5 6h7M8 6v6.5" stroke="var(--chrome)" strokeWidth="2" strokeLinecap="round" />
-      <path d="M10.75 12.25h2.25" stroke="var(--accent)" strokeWidth="1.6" strokeLinecap="round" />
+    <svg className={className} height={height} width={height * LOGO_ASPECT} viewBox={LOGO_VIEWBOX} role="img" aria-label="Captain">
+      <path fill="currentColor" fillRule="evenodd" d={LOGO_PATH} />
     </svg>
   );
 }

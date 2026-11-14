@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { protocolLabel, serverLabel, when } from "../lib/format";
 import type { Site } from "../lib/native";
-import { ArrowRight, Link, Mark, SiteGlyph } from "./Icons";
+import { ArrowRight, Link, SiteGlyph, Wordmark } from "./Icons";
 import { Kbd } from "./ui";
 
 /** The start page: quick connect, and the sites used most recently. */
@@ -11,9 +11,9 @@ export function Welcome({ sites, onQuickConnect, onOpen, onNewSite }: { sites: S
   const recent = [...sites].sort((a, b) => (b.lastUsed ?? 0) - (a.lastUsed ?? 0)).slice(0, 5);
   return (
     <div className="welcome" data-tauri-drag-region>
-      <Mark size={40} />
+      <Wordmark height={52} />
       <h1>{sites.length ? "Where to?" : "Connect to your first server"}</h1>
-      <p>SFTP, FTP and FTP with TLS. Passwords stay in your Keychain, and Teap checks every server's identity before it sends one.</p>
+      <p>SFTP, FTP and FTP with TLS. Passwords stay in your Keychain, and Captain checks every server's identity before it sends one.</p>
       <form
         className="quick"
         onSubmit={(e) => {

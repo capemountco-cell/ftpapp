@@ -172,7 +172,7 @@ pub fn parse_url(url: &str) -> Result<(Site, Option<String>)> {
         "sftp" | "ssh" | "scp" => Protocol::Sftp,
         "ftp" => Protocol::Ftp,
         "ftps" | "ftpes" => Protocol::Ftps,
-        other => return Err(Error::invalid(format!("Teap doesn't speak {other}://"))),
+        other => return Err(Error::invalid(format!("Captain doesn't speak {other}://"))),
     };
     let (authority, remote_path) = match rest.find('/') {
         Some(i) => (&rest[..i], &rest[i..]),

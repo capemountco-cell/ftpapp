@@ -1,17 +1,17 @@
 //! The Tauri shell.
 //!
 //! No logic lives here. A command deserialises its arguments, calls one
-//! method on `teap_core::App`, and returns the result. Anything that touches
+//! method on `captain_core::App`, and returns the result. Anything that touches
 //! the network runs on a blocking thread so the window never stalls.
 //!
 //! Events sent to the window:
-//! - `teap://transfer`: a transfer changed (queued, progress, finished).
+//! - `captain://transfer`: a transfer changed (queued, progress, finished).
 
 use std::sync::Arc;
 
+use captain_core::edit::Watched;
+use captain_core::{trust, App, Bookmark, Entry, Error, Opened, Request, Site, Transfer};
 use tauri::{AppHandle, Emitter, Manager, State};
-use teap_core::edit::Watched;
-use teap_core::{trust, App, Bookmark, Entry, Error, Opened, Request, Site, Transfer};
 
 type Shared = Arc<App>;
 
@@ -271,7 +271,7 @@ fn setup(handle: &AppHandle) -> Result<Shared, Box<dyn std::error::Error>> {
     let cache = paths.app_cache_dir()?;
     let emitter = handle.clone();
     Ok(Arc::new(App::new(Some(support), cache, move |t| {
-        let _ = emitter.emit("teap://transfer", t);
+        let _ = emitter.emit("captain://transfer", t);
     })))
 }
 

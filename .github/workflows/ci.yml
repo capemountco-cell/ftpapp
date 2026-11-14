@@ -30,8 +30,8 @@ jobs:
       - run: cargo fmt --all --check
       # Only the core crate: the Tauri crate needs a webview to compile, and
       # the macOS job below covers it.
-      - run: cargo clippy -p teap-core --all-targets -- -D warnings
-      - run: cargo test -p teap-core
+      - run: cargo clippy -p captain-core --all-targets -- -D warnings
+      - run: cargo test -p captain-core
 
   frontend:
     name: Frontend

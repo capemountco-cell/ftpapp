@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import type { Site, Transfer } from "../lib/native";
-import { ArrowLeft, ArrowRight, Caret, Clock, Compose, Folder, Home, More, Plus, Question, Search, SiteGlyph, Transfers as TransfersIcon, Mark, ChevronDown, Star } from "./Icons";
+import { ArrowLeft, ArrowRight, Caret, Clock, Compose, Folder, Home, More, Plus, Question, Search, SiteGlyph, Transfers as TransfersIcon, Wordmark, ChevronDown, Star } from "./Icons";
 
 export type View = { kind: "home" } | { kind: "transfers" } | { kind: "site"; siteId: string };
 
@@ -75,8 +75,7 @@ export function Sidebar(props: {
 
       <div className="workspace">
         <button className="workspace-name" onClick={props.onWorkspaceMenu}>
-          <Mark size={18} />
-          Teap
+          <Wordmark height={22} />
           <ChevronDown />
         </button>
         <span className="spacer" />

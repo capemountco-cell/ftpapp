@@ -1,4 +1,4 @@
-# Teap
+# Captain
 
 A clean, fast file transfer app for macOS: SFTP, FTP and FTP with TLS.
 It has a Linear-style sidebar of your sites, a list that behaves like
@@ -12,7 +12,7 @@ Finder, and transfers that never get in the way of browsing.
   Server field) to fill everything in.
 - **Safe by default.** Passwords and key passphrases live in the macOS
   Keychain, never in a file. SSH host keys are checked against
-  `~/.ssh/known_hosts` and Teap's own list *before* any password is sent.
+  `~/.ssh/known_hosts` and Captain's own list *before* any password is sent.
   A new server asks you to confirm its fingerprint, and a changed key is
   refused. FTPS certificates are checked by the system. A self-signed one
   can be trusted once, and that exact certificate is pinned.
@@ -26,8 +26,8 @@ Finder, and transfers that never get in the way of browsing.
   connection, with progress, speed and time left. You can stop or retry
   a transfer. Uploads replace files on the server. Downloads never
   overwrite anything on your Mac ("name 2.ext") and are written to a
-  `.teapdownload` file until they're complete.
-- **Edit in place.** ⌘E opens a text file in Teap's editor and ⌘S saves it
+  `.captaindownload` file until they're complete.
+- **Edit in place.** ⌘E opens a text file in Captain's editor and ⌘S saves it
   to the server. "Open in default app" opens a synced copy in your own
   editor and uploads it every time you save.
 - **Inspector** (⌘I) shows properties and permissions, a preview of text
@@ -49,15 +49,15 @@ Protocol tests against real servers are skipped unless you point them at
 some:
 
 ```sh
-TEAP_LIVE_HOST=127.0.0.1 TEAP_LIVE_USER=me TEAP_LIVE_PASS=secret \
-TEAP_LIVE_SFTP_PORT=22 TEAP_LIVE_FTP_PORT=21 TEAP_LIVE_FTPS_PORT=21 \
-cargo test -p teap-core --test live -- --nocapture
+CAPTAIN_LIVE_HOST=127.0.0.1 CAPTAIN_LIVE_USER=me CAPTAIN_LIVE_PASS=secret \
+CAPTAIN_LIVE_SFTP_PORT=22 CAPTAIN_LIVE_FTP_PORT=21 CAPTAIN_LIVE_FTPS_PORT=21 \
+cargo test -p captain-core --test live -- --nocapture
 ```
 
 ## Layout
 
 ```
-crates/teap-core/      Everything Teap does. No Tauri, so it tests on Linux.
+crates/captain-core/      Everything Captain does. No Tauri, so it tests on Linux.
   src/site.rs          Saved sites, URL parsing, the sites file.
   src/secret.rs        Keychain.
   src/trust.rs         Trusted host keys and pinned certificates.
@@ -75,6 +75,6 @@ src/                   The React interface.
 scripts/, docs/        From the Mac App Template: dmg build, verify, signing.
 ```
 
-Teap started from the Mac App Template; `docs/dmg.md` and
+Captain started from the Mac App Template; `docs/dmg.md` and
 `docs/signing.md` cover packaging and releases. Push a tag like
 `v1.0.0` after `npm run set-version -- 1.0.0` to build a release.

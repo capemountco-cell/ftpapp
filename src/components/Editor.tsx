@@ -7,7 +7,7 @@ import { ChevronRight, Close, External, KindIcon, SiteGlyph } from "./Icons";
 import { Kbd } from "./ui";
 
 /**
- * Quick edits without leaving Teap: the file opens over the listing, ⌘S
+ * Quick edits without leaving Captain: the file opens over the listing, ⌘S
  * saves straight to the server. For heavier work, "Open in default app"
  * keeps a synced copy in the user's own editor.
  */
@@ -27,7 +27,7 @@ export function Editor({ site, entry, onClose, onSaved }: { site: Site; entry: E
       .then((t) => {
         if (t === null) {
           setState("error");
-          setError("This file isn't text Teap can edit.");
+          setError("This file isn't text Captain can edit.");
           return;
         }
         setText(t);

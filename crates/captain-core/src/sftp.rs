@@ -1,7 +1,7 @@
 //! SFTP over SSH, through libssh2.
 //!
 //! The server's host key is checked before any credential is sent: against
-//! ~/.ssh/known_hosts first, then against keys trusted in Teap. An unknown
+//! ~/.ssh/known_hosts first, then against keys trusted in Captain. An unknown
 //! key stops with `Error::UnknownHost` so the user can decide; a changed key
 //! stops with `Error::HostKeyChanged`, which the interface never bypasses.
 

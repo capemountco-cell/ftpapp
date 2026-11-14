@@ -1,10 +1,10 @@
 //! Passwords and key passphrases, kept in the macOS login keychain under the
-//! service "Teap" with the site's id as the account. Elsewhere (Linux, where
+//! service "Captain" with the site's id as the account. Elsewhere (Linux, where
 //! the tests run) they are held in memory for the life of the process.
 
 use crate::error::{Error, Result};
 
-const SERVICE: &str = "Teap";
+const SERVICE: &str = "Captain";
 
 #[cfg(target_os = "macos")]
 mod imp {

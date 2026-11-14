@@ -14,7 +14,7 @@ export function TrustDialog({ error, onTrust, onClose }: { error: NativeError; o
           <h2>
             <Warning className="i" style={{ color: "var(--bad)" }} /> {error.host} has a different identity
           </h2>
-          <p>Teap stopped before sending your password. The server's key doesn't match the one you trusted.</p>
+          <p>Captain stopped before sending your password. The server's key doesn't match the one you trusted.</p>
           <div className="callout">
             <Warning />
             <span>
@@ -55,9 +55,9 @@ export function TrustDialog({ error, onTrust, onClose }: { error: NativeError; o
             <Shield className="i" style={{ color: "var(--c-indigo)" }} /> Trust {error.host}?
           </h2>
           {tls ? (
-            <p>The server's certificate isn't trusted by this Mac because {error.reason}. That's common on shared hosting. If you trust this server, Teap will remember this exact certificate.</p>
+            <p>The server's certificate isn't trusted by this Mac because {error.reason}. That's common on shared hosting. If you trust this server, Captain will remember this exact certificate.</p>
           ) : (
-            <p>This is the first time Teap has connected to this server. Check the fingerprint with whoever runs it, or with <span className="code">ssh-keygen -lf</span> on the server, if you can.</p>
+            <p>This is the first time Captain has connected to this server. Check the fingerprint with whoever runs it, or with <span className="code">ssh-keygen -lf</span> on the server, if you can.</p>
           )}
           <div className="fingerprint">
             <span className="label">{tls ? "Certificate SHA-256" : `${error.keyType} key fingerprint`}</span>

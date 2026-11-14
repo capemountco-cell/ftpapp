@@ -76,7 +76,7 @@ pub fn copy(input: &mut dyn Read, out: &mut dyn Write, progress: Progress) -> st
 }
 
 /// The message `copy` fails with when the progress callback says stop.
-pub const CANCELLED: &str = "teap: cancelled";
+pub const CANCELLED: &str = "captain: cancelled";
 
 pub fn is_cancel(e: &std::io::Error) -> bool {
     e.to_string() == CANCELLED

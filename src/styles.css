@@ -1,5 +1,5 @@
 /*
- * Teap's look, after Linear's darker dark mode and Camu: the window chrome
+ * Captain's look, after Linear's darker dark mode and Camu: the window chrome
  * (sidebar) is near-black, and the content sits in a slightly lighter
  * container with rounded corners, inset from the edges. Depth comes from
  * small lightness steps, never heavy shadows. Icons and text are neutral
@@ -204,8 +204,12 @@ p {
 .workspace-name:hover {
   background: var(--hover);
 }
-.workspace-name .mark {
+.wordmark {
+  display: block;
+  flex-shrink: 0;
   color: var(--text);
+  /* The title rows are drag regions; the logo mustn't swallow drags or clicks. */
+  pointer-events: none;
 }
 .workspace-name .i {
   width: 12px;
@@ -1693,9 +1697,8 @@ kbd {
   padding: 40px;
   text-align: center;
 }
-.welcome .mark {
-  color: var(--text);
-  margin-bottom: 12px;
+.welcome .wordmark {
+  margin-bottom: 18px;
 }
 .welcome h1 {
   font-size: 22px;

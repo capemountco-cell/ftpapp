@@ -1,5 +1,5 @@
 [package]
-name = "teap"
+name = "captain"
 description = "The Tauri shell: window, IPC commands, bundling."
 version.workspace = true
 edition.workspace = true
@@ -7,14 +7,14 @@ rust-version.workspace = true
 publish = false
 
 [lib]
-name = "teap_lib"
+name = "captain_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-teap-core = { workspace = true }
+captain-core = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 tauri = { version = "2", features = [] }

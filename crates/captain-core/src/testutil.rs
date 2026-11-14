@@ -6,7 +6,7 @@ use std::sync::atomic::{AtomicU32, Ordering};
 pub fn temp_dir(label: &str) -> PathBuf {
     static N: AtomicU32 = AtomicU32::new(0);
     let dir = std::env::temp_dir().join(format!(
-        "teap-test-{label}-{}-{}",
+        "captain-test-{label}-{}-{}",
         std::process::id(),
         N.fetch_add(1, Ordering::Relaxed)
     ));

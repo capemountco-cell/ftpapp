@@ -1,9 +1,9 @@
 {
-  "name": "teap",
+  "name": "captain",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Teap: a clean, fast SFTP, FTP and FTPS client for macOS. Tauri 2, Rust and React.",
+  "description": "Captain: a clean, fast SFTP, FTP and FTPS client for macOS. Tauri 2, Rust and React.",
   "scripts": {
     "init": "node scripts/init-project.mjs",
     "doctor": "bash scripts/doctor.sh",
@@ -12,7 +12,7 @@
     "build:web": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "check": "npm run typecheck && npm run test && cargo fmt --all --check && cargo clippy -p teap-core --all-targets -- -D warnings && cargo test -p teap-core",
+    "check": "npm run typecheck && npm run test && cargo fmt --all --check && cargo clippy -p captain-core --all-targets -- -D warnings && cargo test -p captain-core",
     "dmg": "bash scripts/build-dmg.sh",
     "dmg:universal": "bash scripts/build-dmg.sh --universal",
     "verify-dmg": "bash scripts/verify-dmg.sh",

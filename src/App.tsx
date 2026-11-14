@@ -25,7 +25,7 @@ export function App() {
   const [view, setView] = useState<View>({ kind: "home" });
   const [tabs, setTabs] = useState<Record<string, Tab>>({});
   const [transfers, setTransfers] = useState<Transfer[]>([]);
-  const [inspector, setInspector] = useState(() => localStorage.getItem("teap.inspector") !== "0");
+  const [inspector, setInspector] = useState(() => localStorage.getItem("captain.inspector") !== "0");
   const [downloadsDir, setDownloadsDir] = useState("~/Downloads");
   const [history, setHistory] = useState<{ back: Place[]; fwd: Place[]; recent: Place[] }>({ back: [], fwd: [], recent: [] });
 
@@ -60,7 +60,7 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("teap.inspector", inspector ? "1" : "0");
+    localStorage.setItem("captain.inspector", inspector ? "1" : "0");
   }, [inspector]);
 
   // Transfers arrive as events; a finished upload refreshes the folder it went to.
@@ -386,7 +386,7 @@ export function App() {
   else if (!nativeAvailable() && !demoMode()) {
     main = (
       <div className="empty">
-        <h2>Teap's window isn't running</h2>
+        <h2>Captain's window isn't running</h2>
         <p>
           Start the app with <span className="code">npm run dev</span>, or open this page with <span className="code">?demo</span> to try the interface with sample data.
         </p>
@@ -508,7 +508,7 @@ const SHORTCUTS: [string, string[]][] = [
   ["Enclosing folder", ["⌘", "↑"]],
   ["Open folder or file", ["⌘", "↓"]],
   ["Rename", ["↩"]],
-  ["Edit in Teap", ["⌘", "E"]],
+  ["Edit in Captain", ["⌘", "E"]],
   ["Download", ["⌘", "D"]],
   ["Upload files", ["⌘", "U"]],
   ["New folder", ["⇧", "⌘", "N"]],

@@ -2,7 +2,7 @@
  * Every call from the UI to Rust goes through this file, so the command
  * surface is visible in one place and argument shapes cannot drift.
  *
- * The types mirror teap-core's serialised structs (camelCase). Opened with
+ * The types mirror captain-core's serialised structs (camelCase). Opened with
  * `?demo` in a plain browser, calls are answered by `mock.ts` instead, so
  * the interface can be designed and screenshotted without a server.
  */
@@ -87,7 +87,7 @@ export interface Watched {
   local: string;
 }
 
-/** Mirrors teap_core::Error. */
+/** Mirrors captain_core::Error. */
 export type NativeError =
   | { kind: "unknownHost"; host: string; keyType: string; fingerprint: string }
   | { kind: "hostKeyChanged"; host: string; fingerprint: string; expected: string }
@@ -109,7 +109,7 @@ export function errorText(e: unknown): string {
   if (isNativeError(e)) {
     switch (e.kind) {
       case "unknownHost":
-        return `${e.host} is a server Teap hasn't seen before.`;
+        return `${e.host} is a server Captain hasn't seen before.`;
       case "hostKeyChanged":
         return `The identity of ${e.host} has changed.`;
       case "untrustedCertificate":
@@ -184,7 +184,7 @@ export const api = {
 export async function onTransfer(handler: (t: Transfer) => void): Promise<UnlistenFn> {
   if (demoMode()) return mock.onTransfer(handler);
   if (!nativeAvailable()) return () => {};
-  return listen<Transfer>("teap://transfer", (e) => handler(e.payload));
+  return listen<Transfer>("captain://transfer", (e) => handler(e.payload));
 }
 
 /** Files dragged in from Finder. `position` is in CSS pixels. */

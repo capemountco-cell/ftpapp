@@ -1,4 +1,4 @@
-//! Teap's logic: saved sites, connections, browsing and transfers.
+//! Captain's logic: saved sites, connections, browsing and transfers.
 //!
 //! No Tauri and no UI here, so everything builds and tests on Linux. The
 //! window talks to [`App`]; each Tauri command calls one of its methods.
@@ -497,7 +497,7 @@ impl App {
 /// Once a second, upload every "Edit in…" copy that was saved since the last look.
 fn start_edit_watcher(inner: Arc<Inner>, queue: transfer::Queue) {
     let _ = std::thread::Builder::new()
-        .name("teap-edit-watch".into())
+        .name("captain-edit-watch".into())
         .spawn(move || loop {
             std::thread::sleep(Duration::from_secs(1));
             let changed = edit::changed(&mut inner.watched.lock().unwrap());
