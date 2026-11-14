@@ -13,12 +13,20 @@
     "windows": [
       {
         "title": "Teap",
-        "width": 1000,
-        "height": 700,
-        "minWidth": 640,
-        "minHeight": 480,
+        "width": 1180,
+        "height": 760,
+        "minWidth": 820,
+        "minHeight": 520,
         "center": true,
-        "resizable": true
+        "resizable": true,
+        "theme": "Dark",
+        "backgroundColor": "#0b0b0c",
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "trafficLightPosition": {
+          "x": 18,
+          "y": 20
+        }
       }
     ],
     "security": {
@@ -27,7 +35,10 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["app", "dmg"],
+    "targets": [
+      "app",
+      "dmg"
+    ],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -35,18 +46,27 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "category": "Utility",
+    "category": "DeveloperTool",
     "copyright": "",
-    "shortDescription": "A native macOS app.",
+    "shortDescription": "A clean, fast FTP, FTPS and SFTP client for macOS.",
     "macOS": {
       "minimumSystemVersion": "12.0",
       "entitlements": "entitlements.plist",
       "hardenedRuntime": true,
       "signingIdentity": "-",
       "dmg": {
-        "windowSize": { "width": 660, "height": 400 },
-        "appPosition": { "x": 180, "y": 190 },
-        "applicationFolderPosition": { "x": 480, "y": 190 }
+        "windowSize": {
+          "width": 660,
+          "height": 400
+        },
+        "appPosition": {
+          "x": 180,
+          "y": 190
+        },
+        "applicationFolderPosition": {
+          "x": 480,
+          "y": 190
+        }
       }
     }
   }

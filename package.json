@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "A native macOS app built with Tauri 2, Rust and React.",
+  "description": "Teap: a clean, fast SFTP, FTP and FTPS client for macOS. Tauri 2, Rust and React.",
   "scripts": {
     "init": "node scripts/init-project.mjs",
     "doctor": "bash scripts/doctor.sh",
@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^2.9.0",
+    "@tauri-apps/plugin-dialog": "^2.8.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

@@ -1,7 +1,11 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "What the main window may do. Start from nothing and add permissions one at a time, as features need them.",
+  "description": "What the main window may do. Start from nothing and add permissions one at a time, as features need them. core:window:allow-start-dragging: the sidebar's top row is the title bar (titleBarStyle Overlay), so dragging it must move the window. Files dropped from Finder arrive through core:default's webview drag-drop events. dialog:allow-open: the native panel for Upload…, choosing a private key and choosing a download folder.",
   "windows": ["main"],
-  "permissions": ["core:default"]
+  "permissions": [
+    "core:default",
+    "core:window:allow-start-dragging",
+    "dialog:allow-open"
+  ]
 }

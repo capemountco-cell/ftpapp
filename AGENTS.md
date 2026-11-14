@@ -75,3 +75,24 @@ npm run dmg
 
 CI builds and verifies a `.dmg` on every push, so a packaging break shows up
 on the pull request that caused it.
+
+## What Teap is
+
+Teap is an SFTP, FTP and FTPS client. The product rules that the code
+relies on:
+
+- **Never send a credential to an unverified server.** SSH host keys are
+  checked (known_hosts, then `trust.rs`) before authentication. A changed
+  key is a hard stop with no bypass in the UI.
+- **Secrets only in the Keychain** (`secret.rs`). `sites.json` must never
+  hold a password or passphrase.
+- **Downloads never overwrite local files.** Uploads replace remote files.
+  See the comment at the top of `transfer.rs`.
+- **Browsing and transfers use separate connections**, so a long upload
+  never blocks the list.
+- New protocol behaviour gets a case in `crates/teap-core/tests/live.rs`.
+
+The interface follows Linear's dark UI: the near-black sidebar is the
+window chrome, and the content sits in an inset, rounded panel. Colour
+only appears where it carries meaning. Check a UI change in a browser
+with `npm run dev:web` and `?demo` before pushing.

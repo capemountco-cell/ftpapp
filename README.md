@@ -1,95 +1,80 @@
-# Mac App Template
+# Teap
 
-A starting point for native macOS apps that build a working `.dmg` from day
-one. Tauri 2, Rust and React, with every known way the `.dmg` step fails
-handled by the scripts rather than by you.
+A clean, fast file transfer app for macOS: SFTP, FTP and FTP with TLS.
+It has a Linear-style sidebar of your sites, a list that behaves like
+Finder, and transfers that never get in the way of browsing.
 
-## Start a new app
+## What it does
 
-Create an empty GitHub repository for the app, open a Claude chat with it
-selected, and paste the prompt in [docs/new-app.md](docs/new-app.md). The
-chat copies this template in, names it, and checks that the `.dmg` builds.
+- **Sites in the sidebar.** Each one keeps its own connection and place,
+  so switching between production and staging is instant. Paste
+  `sftp://user@host:port/path` anywhere (the Start page, ⌘K, or the
+  Server field) to fill everything in.
+- **Safe by default.** Passwords and key passphrases live in the macOS
+  Keychain, never in a file. SSH host keys are checked against
+  `~/.ssh/known_hosts` and Teap's own list *before* any password is sent.
+  A new server asks you to confirm its fingerprint, and a changed key is
+  refused. FTPS certificates are checked by the system. A self-signed one
+  can be trusted once, and that exact certificate is pinned.
+- **Browse like Finder.** Folders come first, names sort the way Finder
+  sorts them, and you can type to select. Return renames, ⌘↓ opens, ⌘↑
+  goes up, ⌘⌫ deletes, ⌘F filters, and ⇧⌘. shows hidden files.
+- **Drag and drop.** Drop files or folders from Finder onto the list to
+  upload them there, or onto a folder row or a breadcrumb to upload into
+  that folder.
+- **Transfers queue.** Three workers run in parallel, each on its own
+  connection, with progress, speed and time left. You can stop or retry
+  a transfer. Uploads replace files on the server. Downloads never
+  overwrite anything on your Mac ("name 2.ext") and are written to a
+  `.teapdownload` file until they're complete.
+- **Edit in place.** ⌘E opens a text file in Teap's editor and ⌘S saves it
+  to the server. "Open in default app" opens a synced copy in your own
+  editor and uploads it every time you save.
+- **Inspector** (⌘I) shows properties and permissions, a preview of text
+  files, and the actions for the selection. **Bookmarks** keep the
+  folders you use most in the sidebar. **⌘K** reaches every site,
+  bookmark, file in view and action.
 
-### Or do it yourself
-
-1. On GitHub, click **Use this template** > **Create a new repository**.
-2. Clone it, then name it:
-
-   ```sh
-   npm install
-   npm run init -- --name "My App" --id com.yourname.myapp
-   ```
-
-3. Check this Mac has what it needs, and fix anything it lists:
-
-   ```sh
-   npm run doctor
-   ```
-
-4. Run it:
-
-   ```sh
-   npm run dev
-   ```
-
-5. Package it:
-
-   ```sh
-   npm run dmg
-   ```
-
-   The image lands at `release/My App-0.1.0-arm64.dmg`, already checked:
-   it mounts, holds the app and an Applications link, and the signature is
-   valid.
-
-## Everyday commands
-
-| Command | Does |
-| --- | --- |
-| `npm run dev` | Runs the app with live reload |
-| `npm run check` | Type check, tests, Rust format, lint and tests. Run before every push |
-| `npm run dmg` | Builds and verifies a `.dmg` for this Mac's chip |
-| `npm run dmg:universal` | One `.dmg` for Apple silicon and Intel |
-| `npm run dmg -- --plain` | Same, without the Finder window styling (over SSH, or if that step hangs) |
-| `npm run verify-dmg -- path.dmg` | Checks any `.dmg` |
-| `npm run icons` | Regenerates every icon size from `src-tauri/app-icon.png` (1024×1024) |
-| `npm run set-version -- 1.2.0` | Sets the version everywhere it lives |
-| `npm run doctor` | Lists anything missing on this machine, with the fix |
-
-## Releasing
+## Develop
 
 ```sh
-npm run set-version -- 1.0.0
-git commit -am "Release 1.0.0"
-git tag v1.0.0
-git push && git push --tags
+npm install
+npm run dev        # the app, with live reload
+npm run dev:web    # just the interface; open http://localhost:1420/?demo for sample data
+npm run check      # type check, tests, Rust format, lint and tests. Run before every push
+npm run dmg        # build and verify a .dmg (on a Mac)
 ```
 
-GitHub Actions builds a universal `.dmg` and attaches it to a GitHub release.
-It is signed and notarized if you have added Apple credentials as secrets
-([docs/signing.md](docs/signing.md)), and ad-hoc signed otherwise.
+Protocol tests against real servers are skipped unless you point them at
+some:
 
-Every push also runs CI, which builds a `.dmg` on a real Mac and attaches it
-to the run, so a change that breaks packaging is caught on the day it is made.
+```sh
+TEAP_LIVE_HOST=127.0.0.1 TEAP_LIVE_USER=me TEAP_LIVE_PASS=secret \
+TEAP_LIVE_SFTP_PORT=22 TEAP_LIVE_FTP_PORT=21 TEAP_LIVE_FTPS_PORT=21 \
+cargo test -p teap-core --test live -- --nocapture
+```
 
 ## Layout
 
 ```
-crates/starter-core/   The app's logic. No Tauri, so it tests on any OS.
-src-tauri/             The native shell: window, commands, bundling config.
-  tauri.conf.json      Name, id, window, .dmg layout, signing.
-  entitlements.plist   What the hardened runtime allows.
-  app-icon.png         The one icon you edit; npm run icons makes the rest.
+crates/teap-core/      Everything Teap does. No Tauri, so it tests on Linux.
+  src/site.rs          Saved sites, URL parsing, the sites file.
+  src/secret.rs        Keychain.
+  src/trust.rs         Trusted host keys and pinned certificates.
+  src/remote.rs        The Remote trait every protocol implements.
+  src/sftp.rs          SFTP (libssh2), with host key checks.
+  src/ftp.rs           FTP and FTPS (suppaftp + rustls), with certificate pinning.
+  src/transfer.rs      The transfer queue.
+  src/edit.rs          "Open in default app" sync.
+  src/lib.rs           App: the one object the window talks to.
+src-tauri/             The native shell: window, commands (one App call each), bundling.
 src/                   The React interface.
   lib/native.ts        Every call from the UI to Rust, in one place.
-scripts/               doctor, init, build-dmg, verify-dmg, set-version.
-docs/                  dmg.md (failures and fixes), signing.md.
+  lib/mock.ts          Sample data for ?demo in a browser.
+  components/          Sidebar, Browser, Inspector, Editor, Transfers, dialogs.
+scripts/, docs/        From the Mac App Template: dmg build, verify, signing.
 ```
 
-`init` renames `starter` and `starter-core` to your app's name.
-
-## Requirements
-
-macOS 12 or newer to build, with the Xcode command line tools, Node 20+ and
-Rust. `npm run doctor` checks all of it. The core crate and the frontend also
-build and test on Linux, and that is what CI does first.
+Teap started from the Mac App Template; `docs/dmg.md` and
+`docs/signing.md` cover packaging and releases. Push a tag like
+`v1.0.0` after `npm run set-version -- 1.0.0` to build a release.

@@ -7,3 +7,20 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+# FTP and FTPS (explicit TLS via rustls, so no OpenSSL for FTP).
+suppaftp = { version = "12", default-features = false, features = ["rustls-ring"] }
+# SFTP over SSH. Vendored OpenSSL: the .dmg must not depend on Homebrew.
+ssh2 = { version = "0.9", features = ["vendored-openssl"] }
+# The TLS stack suppaftp uses, configured here: the OS trust store decides,
+# and a certificate the user has chosen to trust is pinned by fingerprint.
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "logging", "tls12"] }
+rustls-platform-verifier = "0.7"
+ring = "0.17"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+# Passwords live in the login keychain, never in the sites file.
+security-framework = "3"
+
+[dev-dependencies]
