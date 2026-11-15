@@ -3,6 +3,7 @@
 //! No Tauri and no UI here, so everything builds and tests on Linux. The
 //! window talks to [`App`]; each Tauri command calls one of its methods.
 
+pub mod detect;
 pub mod edit;
 pub mod entry;
 pub mod error;
@@ -28,6 +29,7 @@ use std::time::Duration;
 
 use serde::Serialize;
 
+pub use detect::Detected;
 pub use entry::{Entry, Kind};
 pub use error::{Error, Result};
 pub use remote::Remote;
@@ -250,6 +252,12 @@ impl App {
     }
 
     // Connections
+
+    /// What a server speaks (SFTP, FTP or FTP with TLS) and on which port,
+    /// from its greeting. Trying 22 then 21 when no port is given.
+    pub fn detect(&self, host: &str, port: Option<u16>) -> Result<Detected> {
+        detect::detect(host, port)
+    }
 
     /// Check a site's details without saving it.
     pub fn test(&self, draft: Site, secret: Option<String>) -> Result<String> {

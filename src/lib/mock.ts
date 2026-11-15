@@ -266,6 +266,15 @@ const handlers: Record<string, (a: never) => unknown> = {
     return sites.find((s) => s.id === siteId);
   },
   trust_server: () => undefined,
+  detect: ({ host, port }: { host: string; port: number | null }) =>
+    new Promise((r) =>
+      setTimeout(() => {
+        const h = host.toLowerCase();
+        if (h.includes("dlptest") || h.startsWith("ftp.")) r({ protocol: "ftp", port: port ?? 21 });
+        else if (h.includes("rebex")) r({ protocol: "ftps", port: port ?? 21 });
+        else r({ protocol: "sftp", port: port ?? 22 });
+      }, 700),
+    ),
   test_site: () => new Promise((r) => setTimeout(() => r("/home/deploy"), 600)),
   connect: ({ siteId }: { siteId: string }) =>
     new Promise((resolve, reject) =>
