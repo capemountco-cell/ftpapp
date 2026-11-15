@@ -1,6 +1,6 @@
 {
   "name": "captain",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "Captain: a clean, fast SFTP, FTP and FTPS client for macOS. Tauri 2, Rust and React.",

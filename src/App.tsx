@@ -37,6 +37,9 @@ export function App() {
   const [palette, setPalette] = useState(false);
   const [help, setHelp] = useState(false);
   const [editor, setEditor] = useState<{ site: Site; entry: Entry; onSaved: () => void } | null>(null);
+  const editorRef = useRef(editor);
+  editorRef.current = editor;
+  const editorDirty = useRef(false);
   const [chmod, setChmod] = useState<{ site: Site; entry: Entry; onDone: () => void } | null>(null);
   const { toasts, push: toast } = useToasts();
 
@@ -137,7 +140,29 @@ export function App() {
   const sitesRef = useRef(sites);
   sitesRef.current = sites;
 
-  const goSite = useCallback(
+  // Going anywhere closes the editor, after asking if it has unsaved edits.
+  // (It covers the main area, so leaving it open hid every view behind it.)
+  const leaveEditor = useCallback((then: () => void) => {
+    const open = editorRef.current;
+    if (!open) return then();
+    if (!editorDirty.current) {
+      setEditor(null);
+      return then();
+    }
+    setConfirm({
+      title: `Discard changes to “${open.entry.name}”?`,
+      body: "Your edits haven't been saved to the server.",
+      action: "Discard",
+      danger: true,
+      onConfirm: () => {
+        editorDirty.current = false;
+        setEditor(null);
+        then();
+      },
+    });
+  }, []);
+
+  const goSiteNow = useCallback(
     (siteId: string, path?: string | null) => {
       setView({ kind: "site", siteId });
       const tab = tabsRef.current[siteId];
@@ -151,17 +176,24 @@ export function App() {
     },
     [connect, record, updateTab],
   );
+  const goSite = useCallback(
+    (siteId: string, path?: string | null) => leaveEditor(() => goSiteNow(siteId, path)),
+    [leaveEditor, goSiteNow],
+  );
 
   const goView = useCallback(
     (v: View) => {
       if (v.kind === "site") return goSite(v.siteId);
-      setView(v);
-      record(v.kind === "home" ? { kind: "home" } : { kind: "transfers" });
+      leaveEditor(() => {
+        setView(v);
+        record(v.kind === "home" ? { kind: "home" } : { kind: "transfers" });
+      });
     },
-    [goSite, record],
+    [goSite, leaveEditor, record],
   );
 
-  const restore = (p: Place) => {
+  const restore = (p: Place) => leaveEditor(() => restoreNow(p));
+  const restoreNow = (p: Place) => {
     placeRef.current = p;
     if (p.kind === "site") {
       setView({ kind: "site", siteId: p.siteId });
@@ -452,7 +484,20 @@ export function App() {
         />
         <main className="main">
           {main}
-          {editor && <Editor site={editor.site} entry={editor.entry} onSaved={editor.onSaved} onClose={() => setEditor(null)} />}
+          {editor && (
+            <Editor
+              site={editor.site}
+              entry={editor.entry}
+              onSaved={editor.onSaved}
+              onDirty={(d) => {
+                editorDirty.current = d;
+              }}
+              onClose={() => {
+                editorDirty.current = false;
+                setEditor(null);
+              }}
+            />
+          )}
         </main>
       </div>
 

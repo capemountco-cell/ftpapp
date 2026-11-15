@@ -166,6 +166,8 @@ export const api = {
   delete: (siteId: string, paths: string[]) => call<void>("delete", { siteId, paths }),
   chmod: (siteId: string, path: string, mode: number) => call<void>("chmod", { siteId, path, mode }),
   readText: (siteId: string, path: string, limit: number) => call<string | null>("read_text", { siteId, path, limit }),
+  /** Raw file bytes for an image preview; empty when the file is over `limit`. */
+  readBytes: (siteId: string, path: string, limit: number) => call<ArrayBuffer | null>("read_bytes", { siteId, path, limit }),
   writeText: (siteId: string, path: string, text: string) => call<void>("write_text", { siteId, path, text }),
   editExternal: (siteId: string, path: string) => call<Watched>("edit_external", { siteId, path }),
   watched: () => call<Watched[]>("watched"),

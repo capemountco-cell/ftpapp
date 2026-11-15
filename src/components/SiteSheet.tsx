@@ -65,6 +65,8 @@ export function SiteSheet({
     setError(null);
   };
   const authKind = site.auth.kind as AuthChoice;
+  // SFTP on FTP's port, or an ftp.* server name: almost always the wrong protocol.
+  const looksLikeFtp = site.protocol === "sftp" && (site.port === 21 || /^ftp\./i.test(site.host.trim()));
   const setAuth = (kind: AuthChoice) =>
     set({ auth: kind === "key" ? { kind: "key", path: site.auth.kind === "key" ? site.auth.path : "~/.ssh/id_ed25519" } : { kind } });
   const setProtocol = (protocol: Protocol) => {
@@ -162,6 +164,15 @@ export function SiteSheet({
               ))}
             </div>
           </div>
+
+          {looksLikeFtp && (
+            <div className="field full protocol-hint" role="note">
+              <Warning />
+              <span>{site.port === 21 ? "Port 21 is for FTP, not SFTP." : "This looks like an FTP server."}</span>
+              <button type="button" className="btn" onClick={() => setProtocol("ftps")}>Use FTP with TLS</button>
+              <button type="button" className="btn" onClick={() => setProtocol("ftp")}>Use FTP</button>
+            </div>
+          )}
 
           <div className="field full split">
             <div className="field">

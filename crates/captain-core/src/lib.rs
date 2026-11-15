@@ -116,6 +116,17 @@ impl Inner {
     }
 }
 
+/// Pasted passwords often pick up a space or line break at either end, which
+/// servers then reject. Spaces inside a password are kept.
+fn clean_secret(s: String) -> String {
+    let t = s.trim();
+    if t.len() == s.len() {
+        s
+    } else {
+        t.to_string()
+    }
+}
+
 pub struct App {
     inner: Arc<Inner>,
     queue: transfer::Queue,
@@ -159,6 +170,7 @@ impl App {
     /// `None` leaves it as it was.
     pub fn save_site(&self, draft: Site, secret: Option<String>) -> Result<Site> {
         let site = site::normalize(draft)?;
+        let secret = secret.map(clean_secret);
         match secret.as_deref() {
             Some("") => secret::delete(&site.id)?,
             Some(s) => secret::set(&site.id, s)?,
@@ -243,7 +255,7 @@ impl App {
     pub fn test(&self, draft: Site, secret: Option<String>) -> Result<String> {
         let site = site::normalize(draft)?;
         let secret = match secret {
-            Some(s) => Some(s),
+            Some(s) => Some(clean_secret(s)),
             None => secret::get(&site.id)?,
         };
         let mut conn = remote::connect(&site, secret.as_deref(), &self.inner.trust)?;
@@ -377,14 +389,7 @@ impl App {
     /// A text file's contents, for the preview and the built-in editor.
     /// `None` for binary files and files over `limit` bytes.
     pub fn read_text(&self, site_id: &str, target: &str, limit: u64) -> Result<Option<String>> {
-        let bytes = self.inner.with(site_id, |r| {
-            let mut buf = Vec::new();
-            match r.download(target, &mut buf, &mut |n| n <= limit) {
-                Ok(_) => Ok(Some(buf)),
-                Err(Error::Cancelled) => Ok(None),
-                Err(e) => Err(e),
-            }
-        })?;
+        let bytes = self.read_bytes(site_id, target, limit)?;
         Ok(bytes.and_then(|b| {
             if b.contains(&0) {
                 None
@@ -392,6 +397,18 @@ impl App {
                 String::from_utf8(b).ok()
             }
         }))
+    }
+
+    /// A file's raw contents, for image previews. `None` for files over `limit` bytes.
+    pub fn read_bytes(&self, site_id: &str, target: &str, limit: u64) -> Result<Option<Vec<u8>>> {
+        self.inner.with(site_id, |r| {
+            let mut buf = Vec::new();
+            match r.download(target, &mut buf, &mut |n| n <= limit) {
+                Ok(_) => Ok(Some(buf)),
+                Err(Error::Cancelled) => Ok(None),
+                Err(e) => Err(e),
+            }
+        })
     }
 
     pub fn write_text(&self, site_id: &str, target: &str, text: &str) -> Result<()> {

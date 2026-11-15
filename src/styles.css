@@ -984,6 +984,23 @@ p {
   color: var(--faint);
 }
 
+.preview-img.has-image {
+  height: auto;
+  min-height: 140px;
+  max-height: 320px;
+  padding: 10px;
+  overflow: hidden;
+  /* A checkerboard so transparent images stay visible. */
+  background: repeating-conic-gradient(#141416 0 25%, #0f0f11 0 50%) 0 0 / 16px 16px;
+}
+.preview-img.has-image img {
+  display: block;
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
 /* ───────────────────────── Keyboard hints ───────────────────────── */
 
 .kbd-group {
@@ -1221,6 +1238,26 @@ kbd {
   padding: 0 20px 14px;
   color: var(--faint);
   font-size: 12px;
+}
+.protocol-hint {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--secondary);
+  font-size: 12px;
+}
+.protocol-hint svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+}
+.protocol-hint span {
+  flex: 1;
 }
 .fields {
   display: grid;
@@ -1650,7 +1687,7 @@ kbd {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--secondary);
+  background: var(--accent);
 }
 
 /* ───────────────────────── Welcome ───────────────────────── */

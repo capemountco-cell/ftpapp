@@ -102,6 +102,13 @@ fn exercise(protocol: Protocol, port: u16) {
             .as_deref(),
         Some("hello")
     );
+    assert_eq!(
+        app.read_bytes(&site.id, &renamed, 1 << 20)
+            .unwrap()
+            .as_deref(),
+        Some(&b"hello"[..])
+    );
+    assert_eq!(app.read_bytes(&site.id, &renamed, 2).unwrap(), None);
     app.write_text(&site.id, &renamed, "edited").unwrap();
     assert_eq!(
         app.read_text(&site.id, &renamed, 1 << 20)
@@ -158,6 +165,46 @@ fn wait(app: &App) {
     panic!("transfers didn't finish");
 }
 
+/// An SFTP site pointed at an FTP port says so at once instead of waiting
+/// 30 seconds for SSH. A wrong password shows the server's own words.
+fn wrong_protocol_and_password(ftp_port: u16) {
+    let host = env("CAPTAIN_LIVE_HOST").unwrap();
+    let base = std::env::temp_dir().join(format!("captain-live-wrong-{}", std::process::id()));
+    let app = App::new(Some(base.join("support")), base.join("cache"), |_| {});
+    let site = |protocol| Site {
+        id: String::new(),
+        name: "wrong".into(),
+        protocol,
+        host: host.clone(),
+        port: ftp_port,
+        user: env("CAPTAIN_LIVE_USER").unwrap(),
+        auth: Auth::Password,
+        remote_path: String::new(),
+        local_path: String::new(),
+        color: "blue".into(),
+        bookmarks: vec![],
+        last_used: None,
+    };
+    let started = std::time::Instant::now();
+    let err = app
+        .test(site(Protocol::Sftp), env("CAPTAIN_LIVE_PASS"))
+        .unwrap_err();
+    println!("SFTP on the FTP port: {err}");
+    assert!(err.to_string().contains("is an FTP server"), "{err}");
+    assert!(started.elapsed() < Duration::from_secs(10));
+
+    let err = app
+        .test(site(Protocol::Ftp), Some("not the password".into()))
+        .unwrap_err();
+    println!("Wrong FTP password: {err}");
+    assert!(matches!(err, Error::Auth { .. }), "{err}");
+
+    // A pasted password with a trailing line break still works.
+    let pass = format!("{}\n", env("CAPTAIN_LIVE_PASS").unwrap());
+    app.test(site(Protocol::Ftp), Some(pass)).unwrap();
+    let _ = std::fs::remove_dir_all(&base);
+}
+
 #[test]
 fn live_servers() {
     if env("CAPTAIN_LIVE_HOST").is_none() {
@@ -172,5 +219,8 @@ fn live_servers() {
         if let Some(port) = env(var).and_then(|p| p.parse().ok()) {
             exercise(protocol, port);
         }
+    }
+    if let Some(port) = env("CAPTAIN_LIVE_FTP_PORT").and_then(|p| p.parse().ok()) {
+        wrong_protocol_and_password(port);
     }
 }

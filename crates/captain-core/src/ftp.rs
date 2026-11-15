@@ -33,6 +33,37 @@ pub struct Ftp {
     dirty: bool,
 }
 
+/// A refused login, with the server's own reason when it gives one beyond a
+/// bare "530 Login incorrect" (for example that it needs TLS).
+fn login_refused(reply: &str) -> Error {
+    let base = "The server didn't accept that username and password";
+    let reason = reply
+        .lines()
+        .last()
+        .unwrap_or("")
+        .trim_start_matches(|c: char| c.is_ascii_digit() || c == '-' || c == ' ')
+        .trim()
+        .trim_end_matches('.');
+    let lower = reason.to_lowercase();
+    let generic = reason.is_empty()
+        || [
+            "login incorrect",
+            "login authentication failed",
+            "not logged in",
+            "authentication failed",
+            "login failed",
+        ]
+        .iter()
+        .any(|g| lower == *g);
+    Error::Auth {
+        message: if generic {
+            base.into()
+        } else {
+            format!("{base}. The server said: \u{201c}{reason}\u{201d}")
+        },
+    }
+}
+
 fn map(e: FtpError, p: &str) -> Error {
     match e {
         FtpError::ConnectionError(io) => Error::connection(io.to_string()),
@@ -45,9 +76,7 @@ fn map(e: FtpError, p: &str) -> Error {
                 .map(|(_, rest)| rest.to_string())
                 .unwrap_or(text.clone());
             match r.status {
-                Status::NotLoggedIn => Error::Auth {
-                    message: "The server didn't accept that username and password".into(),
-                },
+                Status::NotLoggedIn => login_refused(&text),
                 Status::NotAvailable => Error::connection(message),
                 Status::FileUnavailable
                     if message.to_lowercase().contains("no such")
@@ -228,9 +257,9 @@ impl Ftp {
         stream
             .login(user.as_str(), pass.as_str())
             .map_err(|e| match e {
-                FtpError::UnexpectedResponse(r) if r.status == Status::NotLoggedIn => Error::Auth {
-                    message: "The server didn't accept that username and password".into(),
-                },
+                FtpError::UnexpectedResponse(r) if r.status == Status::NotLoggedIn => {
+                    login_refused(String::from_utf8_lossy(&r.body).trim())
+                }
                 other => map(other, ""),
             })?;
         stream
@@ -431,6 +460,24 @@ impl Ftp {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn login_refusal_keeps_the_server_reason() {
+        let msg = |r: &str| match super::login_refused(r) {
+            crate::error::Error::Auth { message } => message,
+            _ => unreachable!(),
+        };
+        assert_eq!(
+            msg("530 Login incorrect."),
+            "The server didn't accept that username and password"
+        );
+        assert_eq!(
+            msg("530 "),
+            "The server didn't accept that username and password"
+        );
+        assert!(msg("530 TLS is required for this user")
+            .ends_with("\u{201c}TLS is required for this user\u{201d}"));
+    }
+
     use super::*;
 
     #[test]

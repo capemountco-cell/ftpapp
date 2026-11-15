@@ -188,6 +188,20 @@ async fn read_text(
     blocking(move || app.read_text(&site_id, &path, limit)).await
 }
 
+/// Raw bytes for an image preview, sent as binary rather than JSON. Empty when
+/// the file is over `limit`.
+#[tauri::command]
+async fn read_bytes(
+    app: State<'_, Shared>,
+    site_id: String,
+    path: String,
+    limit: u64,
+) -> Result<tauri::ipc::Response, Error> {
+    let app = app.inner().clone();
+    let bytes = blocking(move || app.read_bytes(&site_id, &path, limit)).await?;
+    Ok(tauri::ipc::Response::new(bytes.unwrap_or_default()))
+}
+
 #[tauri::command]
 async fn write_text(
     app: State<'_, Shared>,
@@ -307,6 +321,7 @@ pub fn run() {
             delete,
             chmod,
             read_text,
+            read_bytes,
             write_text,
             edit_external,
             watched,
