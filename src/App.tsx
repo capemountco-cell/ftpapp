@@ -510,6 +510,7 @@ export function App() {
               site={editor.site}
               entry={editor.entry}
               onSaved={editor.onSaved}
+              onNavigate={(path) => goSite(editor.site.id, path ?? tabsRef.current[editor.site.id]?.home ?? null)}
               onDirty={(d) => {
                 editorDirty.current = d;
               }}

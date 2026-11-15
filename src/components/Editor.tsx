@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { fileKind, kindLabel } from "../lib/format";
+import { crumbs, fileKind, kindLabel, parent } from "../lib/format";
 import { api, errorText, type Entry, type Site } from "../lib/native";
 import { useServices } from "../lib/services";
 import { ChevronRight, Close, External, KindIcon, SiteGlyph } from "./Icons";
@@ -17,12 +17,15 @@ export function Editor({
   onClose,
   onSaved,
   onDirty,
+  onNavigate,
 }: {
   site: Site;
   entry: Entry;
   onClose: () => void;
   onSaved: () => void;
   onDirty?: (dirty: boolean) => void;
+  /** Go to a folder on this site, or its login folder for null. Asks first if there are unsaved edits. */
+  onNavigate?: (path: string | null) => void;
 }) {
   const services = useServices();
   const [text, setText] = useState<string | null>(null);
@@ -32,6 +35,8 @@ export function Editor({
   const area = useRef<HTMLTextAreaElement>(null);
   const gutter = useRef<HTMLDivElement>(null);
   const dirty = text !== null && text !== saved;
+  // The folders above the file, the nearest two, so the header stays short.
+  const folders = crumbs(parent(entry.path) ?? "/").slice(1).slice(-2);
   useEffect(() => {
     onDirty?.(dirty);
   }, [dirty, onDirty]);
@@ -100,10 +105,18 @@ export function Editor({
     <div className="editor">
       <header className="header">
         <nav className="crumbs">
-          <span className="crumb root">
+          <button type="button" className="crumb root" onClick={() => onNavigate?.(null)} title={`${site.name} — go to login folder`}>
             <SiteGlyph />
             {site.name}
-          </span>
+          </button>
+          {folders.map((c) => (
+            <span key={c.path} style={{ display: "contents" }}>
+              <ChevronRight className="i crumb-sep" />
+              <button type="button" className="crumb" onClick={() => onNavigate?.(c.path)} title={c.path}>
+                {c.name}
+              </button>
+            </span>
+          ))}
           <ChevronRight className="i crumb-sep" />
           <span className="crumb last">
             <KindIcon kind={fileKind(entry)} />
