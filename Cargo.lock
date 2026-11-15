@@ -250,7 +250,7 @@ dependencies = [
 
 [[package]]
 name = "captain"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "captain-core",
  "serde",
@@ -262,7 +262,7 @@ dependencies = [
 
 [[package]]
 name = "captain-core"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "ring",
  "rustls",

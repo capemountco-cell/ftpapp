@@ -9,7 +9,7 @@ import { Sidebar, type SiteStatus, type View } from "./components/Sidebar";
 import { SiteSheet, blankSite } from "./components/SiteSheet";
 import { TransfersView } from "./components/TransfersView";
 import { Confirm, Dialog, Kbd, Menu, Prompt, Toasts, useToasts, type MenuEntry, type MenuState } from "./components/ui";
-import { Welcome } from "./components/Welcome";
+import { parseQuick, Welcome } from "./components/Welcome";
 import { fileKind, parent, serverLabel, tilde } from "./lib/format";
 import { api, copyText, demoMode, errorText, isNativeError, nativeAvailable, onTransfer, type Entry, type NativeError, type Site, type Transfer } from "./lib/native";
 import { ServicesContext, type Services } from "./lib/services";
@@ -285,8 +285,10 @@ export function App() {
       const existing = sites.find((s) => s.host === site.host && s.user === site.user && s.protocol === site.protocol && s.port === site.port);
       if (existing) return goSite(existing.id, site.remotePath || null);
       setSheet({ site: { ...blankSite(), ...site, color: blankSite().color }, secret });
-    } catch (e) {
-      toast("bad", errorText(e));
+    } catch {
+      // A bare host or an incomplete link: fill in what's known and ask for the rest.
+      const p = parseQuick(url);
+      setSheet({ site: { ...blankSite(), host: p.host, user: p.user, ...(p.port ? { port: p.port } : {}) }, secret: p.pass || null });
     }
   };
 
@@ -443,7 +445,26 @@ export function App() {
       />
     );
   } else {
-    main = <Welcome sites={sites} onQuickConnect={(u) => void quickConnect(u)} onOpen={(s) => goSite(s.id)} onNewSite={() => setSheet({ site: blankSite(), secret: null })} />;
+    main = (
+      <Welcome
+        sites={sites}
+        onOpen={(s, path) => goSite(s.id, path)}
+        onNewSite={() => setSheet({ site: blankSite(), secret: null })}
+        onSaved={(saved) => {
+          setSites((all) => [...all.filter((x) => x.id !== saved.id), saved]);
+          goSite(saved.id, saved.remotePath || null);
+        }}
+        onTrust={(error, site, retry) =>
+          setTrust({
+            error,
+            retry: () =>
+              void api
+                .trustServer(error.kind === "untrustedCertificate", site.host, site.port, "fingerprint" in error ? error.fingerprint : "")
+                .then(retry),
+          })
+        }
+      />
+    );
   }
 
   return (
@@ -489,6 +510,7 @@ export function App() {
               site={editor.site}
               entry={editor.entry}
               onSaved={editor.onSaved}
+              onNavigate={(path) => goSite(editor.site.id, path ?? tabsRef.current[editor.site.id]?.home ?? null)}
               onDirty={(d) => {
                 editorDirty.current = d;
               }}

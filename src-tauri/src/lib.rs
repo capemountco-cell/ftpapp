@@ -55,6 +55,16 @@ fn parse_url(app: State<Shared>, url: String) -> Result<(Site, Option<String>), 
 }
 
 #[tauri::command]
+async fn detect(
+    app: State<'_, Shared>,
+    host: String,
+    port: Option<u16>,
+) -> Result<captain_core::Detected, Error> {
+    let app = app.inner().clone();
+    blocking(move || app.detect(&host, port)).await
+}
+
+#[tauri::command]
 fn url_for(app: State<Shared>, site_id: String, path: String) -> Result<String, Error> {
     app.url_for(&site_id, &path)
 }
@@ -306,6 +316,7 @@ pub fn run() {
             reorder_sites,
             has_secret,
             parse_url,
+            detect,
             url_for,
             set_bookmarks,
             trust_server,

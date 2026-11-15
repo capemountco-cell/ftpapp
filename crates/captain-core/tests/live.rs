@@ -223,4 +223,22 @@ fn live_servers() {
     if let Some(port) = env("CAPTAIN_LIVE_FTP_PORT").and_then(|p| p.parse().ok()) {
         wrong_protocol_and_password(port);
     }
+    // Quick connect reads each server's greeting to pick the protocol.
+    let host = env("CAPTAIN_LIVE_HOST").unwrap();
+    let app = App::new(
+        None,
+        std::env::temp_dir().join("captain-live-detect"),
+        |_| {},
+    );
+    for (var, protocol) in [
+        ("CAPTAIN_LIVE_SFTP_PORT", Protocol::Sftp),
+        ("CAPTAIN_LIVE_FTP_PORT", Protocol::Ftp),
+        ("CAPTAIN_LIVE_FTPS_PORT", Protocol::Ftps),
+    ] {
+        if let Some(port) = env(var).and_then(|p| p.parse().ok()) {
+            let found = app.detect(&host, Some(port)).unwrap();
+            println!("detect {port}: {:?}", found.protocol);
+            assert_eq!(found.protocol, protocol);
+        }
+    }
 }

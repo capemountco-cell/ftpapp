@@ -150,6 +150,8 @@ export const api = {
   reorderSites: (ids: string[]) => call<void>("reorder_sites", { ids }),
   hasSecret: (id: string) => call<boolean>("has_secret", { id }),
   parseUrl: (url: string) => call<[Site, string | null]>("parse_url", { url }),
+  /** What a server speaks, from its greeting: tries 22 then 21 without a port. */
+  detect: (host: string, port: number | null) => call<{ protocol: Protocol; port: number }>("detect", { host, port }),
   urlFor: (siteId: string, path: string) => call<string>("url_for", { siteId, path }),
   setBookmarks: (siteId: string, bookmarks: Bookmark[]) => call<Site>("set_bookmarks", { siteId, bookmarks }),
   trustServer: (tls: boolean, host: string, port: number, fingerprint: string) =>
