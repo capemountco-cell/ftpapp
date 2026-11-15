@@ -1,7 +1,9 @@
 name: Release
 
 # Push a tag like v1.2.0 and this builds a universal .dmg (Apple silicon and
-# Intel in one file) and attaches it to a GitHub release.
+# Intel in one file) and attaches it to a GitHub release. Or run it by hand
+# from the Actions tab on main: it then releases the version in package.json
+# as v<version>, creating the tag on that commit.
 #
 # Signing and notarization happen only when the secrets below exist. Without
 # them the .dmg is ad-hoc signed, which works but asks downloaders to approve
@@ -76,15 +78,22 @@ jobs:
           npm run dmg:universal
 
       - name: Attach to a GitHub release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # A pushed tag names the release; a manual run on main releases
+          # package.json's version and creates its tag on this commit.
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            tag="$GITHUB_REF_NAME"
+          else
+            tag="v$(node -p 'require("./package.json").version')"
+          fi
           dmg="$(ls release/*.dmg)"
           shasum -a 256 "$dmg" > "$dmg.sha256"
-          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 \
-            || gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes
-          gh release upload "$GITHUB_REF_NAME" "$dmg" "$dmg.sha256" --clobber
+          gh release view "$tag" >/dev/null 2>&1 \
+            || gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --generate-notes
+          gh release upload "$tag" "$dmg" "$dmg.sha256" --clobber
 
       - name: Upload the .dmg
         uses: actions/upload-artifact@v4
