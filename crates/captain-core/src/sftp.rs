@@ -59,6 +59,27 @@ fn key_type(t: HostKeyType) -> &'static str {
     }
 }
 
+/// An FTP server greets first with "220 ...", where an SSH server sends
+/// "SSH-2.0-...". Peeking at that greeting turns a 30-second wait for SSH into
+/// a clear "this is an FTP server" straight away.
+fn refuse_ftp_greeting(tcp: &std::net::TcpStream, site: &Site) -> Result<()> {
+    let mut buf = [0u8; 8];
+    let _ = tcp.set_read_timeout(Some(std::time::Duration::from_secs(5)));
+    let n = tcp.peek(&mut buf).unwrap_or(0);
+    let _ = tcp.set_read_timeout(None);
+    if looks_like_ftp(&buf[..n]) {
+        return Err(Error::connection(format!(
+            "{} is an FTP server on port {}, not SFTP. Edit the site and choose FTP with TLS, or FTP",
+            site.host, site.port
+        )));
+    }
+    Ok(())
+}
+
+fn looks_like_ftp(greeting: &[u8]) -> bool {
+    greeting.starts_with(b"220") || greeting.starts_with(b"120") || greeting.starts_with(b"421")
+}
+
 /// Answers every keyboard-interactive prompt with the password: what servers
 /// that disable plain "password" auth ask for, nine times out of ten.
 struct PasswordPrompt<'a>(&'a str);
@@ -77,6 +98,7 @@ impl KeyboardInteractivePrompt for PasswordPrompt<'_> {
 impl Sftp {
     pub fn connect(site: &Site, secret: Option<&str>, trust: &Trust) -> Result<Self> {
         let tcp = remote::tcp(&site.host, site.port)?;
+        refuse_ftp_greeting(&tcp, site)?;
         let mut session = Session::new().map_err(|e| map(e, ""))?;
         session.set_tcp_stream(tcp);
         session.set_timeout(30_000);
@@ -338,5 +360,15 @@ impl Remote for Sftp {
 
     fn alive(&mut self) -> bool {
         self.session.keepalive_send().is_ok() && self.sftp.realpath(Path::new(".")).is_ok()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn spots_an_ftp_greeting() {
+        assert!(super::looks_like_ftp(b"220 Welc"));
+        assert!(!super::looks_like_ftp(b"SSH-2.0-"));
+        assert!(!super::looks_like_ftp(b""));
     }
 }

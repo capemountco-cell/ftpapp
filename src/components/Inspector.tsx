@@ -8,6 +8,21 @@ import { Code, Copy, Download, External, Folder, KindIcon, Link, Lock, Pencil, S
 import { Kbd } from "./ui";
 
 const PREVIEW_LIMIT = 64 * 1024;
+const IMAGE_LIMIT = 8 * 1024 * 1024;
+const IMAGE_TYPES: Record<string, string> = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  gif: "image/gif",
+  webp: "image/webp",
+  svg: "image/svg+xml",
+  ico: "image/x-icon",
+  bmp: "image/bmp",
+  tiff: "image/tiff",
+  heic: "image/heic",
+  avif: "image/avif",
+};
+const imageType = (name: string) => IMAGE_TYPES[name.split(".").pop()?.toLowerCase() ?? ""];
 
 export function Inspector({
   site,
@@ -36,9 +51,42 @@ export function Inspector({
   const one = selected.length === 1 ? selected[0] : null;
   const [preview, setPreview] = useState<{ path: string; text: string | null } | null>(null);
 
+  // Image previews: downloaded as bytes and shown from a blob URL. Keyed on the
+  // file itself, not the entry object, which is rebuilt on every render.
+  const [image, setImage] = useState<{ path: string; url: string | null } | null>(null);
+  const imagePath = one && one.kind === "file" && imageType(one.name) && one.size <= IMAGE_LIMIT ? one.path : null;
+  const imageStamp = one ? `${one.size}:${one.modified}` : "";
+  useEffect(() => {
+    setImage(null);
+    if (!imagePath) return;
+    const type = imageType(imagePath);
+    let stale = false;
+    const t = window.setTimeout(() => {
+      api
+        .readBytes(site.id, imagePath, IMAGE_LIMIT)
+        .then((bytes) => {
+          if (stale) return;
+          const url = bytes && bytes.byteLength > 0 ? URL.createObjectURL(new Blob([bytes], { type })) : null;
+          setImage({ path: imagePath, url });
+        })
+        .catch(() => !stale && setImage({ path: imagePath, url: null }));
+    }, 150);
+    return () => {
+      stale = true;
+      window.clearTimeout(t);
+    };
+  }, [site.id, imagePath, imageStamp]);
+  // Free each blob URL once it's no longer shown.
+  useEffect(() => {
+    const url = image?.url;
+    return () => {
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [image]);
+
   useEffect(() => {
     setPreview(null);
-    if (!one || one.kind !== "file" || !editable(one) || one.size > PREVIEW_LIMIT) return;
+    if (!one || one.kind !== "file" || !editable(one) || one.size > PREVIEW_LIMIT || imageType(one.name)) return;
     let stale = false;
     const t = window.setTimeout(() => {
       api
@@ -184,7 +232,21 @@ export function Inspector({
       {one.kind === "file" && (
         <div className="ins-section">
           <h3>Preview</h3>
-          {isText && one.size <= PREVIEW_LIMIT ? (
+          {imagePath === one.path ? (
+            image && image.path === one.path ? (
+              image.url ? (
+                <div className="preview-img has-image">
+                  <img src={image.url} alt={one.name} onError={() => setImage({ path: one.path, url: null })} />
+                </div>
+              ) : (
+                <div className="preview-img">No preview</div>
+              )
+            ) : (
+              <div className="preview-img">
+                <span className="sk" style={{ width: "60%" }} />
+              </div>
+            )
+          ) : isText && one.size <= PREVIEW_LIMIT ? (
             preview && preview.path === one.path ? (
               preview.text !== null ? (
                 <pre className="preview">{preview.text.slice(0, 6000) || " "}</pre>

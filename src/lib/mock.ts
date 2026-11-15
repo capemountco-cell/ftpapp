@@ -333,6 +333,11 @@ const handlers: Record<string, (a: never) => unknown> = {
     if (!n || n.dir) return Promise.reject({ kind: "notFound", path });
     return n.text !== undefined && n.size <= limit ? n.text : null;
   },
+  read_bytes: ({ path }: { path: string }) => {
+    if (!path.endsWith(".svg")) return null;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="120" viewBox="0 0 240 120"><rect width="240" height="120" rx="16" fill="#101012"/><circle cx="60" cy="60" r="28" fill="#2dd4bf"/><rect x="104" y="44" width="104" height="12" rx="6" fill="#ececef"/><rect x="104" y="66" width="72" height="10" rx="5" fill="#7e7e86"/></svg>`;
+    return new TextEncoder().encode(svg).buffer;
+  },
   write_text: ({ path, text }: { path: string; text: string }) => {
     const n = find(path);
     if (n && !n.dir) {

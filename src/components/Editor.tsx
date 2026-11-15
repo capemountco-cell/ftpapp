@@ -11,7 +11,19 @@ import { Kbd } from "./ui";
  * saves straight to the server. For heavier work, "Open in default app"
  * keeps a synced copy in the user's own editor.
  */
-export function Editor({ site, entry, onClose, onSaved }: { site: Site; entry: Entry; onClose: () => void; onSaved: () => void }) {
+export function Editor({
+  site,
+  entry,
+  onClose,
+  onSaved,
+  onDirty,
+}: {
+  site: Site;
+  entry: Entry;
+  onClose: () => void;
+  onSaved: () => void;
+  onDirty?: (dirty: boolean) => void;
+}) {
   const services = useServices();
   const [text, setText] = useState<string | null>(null);
   const [saved, setSaved] = useState<string>("");
@@ -20,6 +32,9 @@ export function Editor({ site, entry, onClose, onSaved }: { site: Site; entry: E
   const area = useRef<HTMLTextAreaElement>(null);
   const gutter = useRef<HTMLDivElement>(null);
   const dirty = text !== null && text !== saved;
+  useEffect(() => {
+    onDirty?.(dirty);
+  }, [dirty, onDirty]);
 
   useEffect(() => {
     api
